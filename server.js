@@ -12,7 +12,7 @@ app.get('/api/v10/channels/:channelId/messages', async (req, res) => {
   const around = req.query.around;
 
   // ✅ Get Bot Token from request headers
-  const botToken = req.headers['x-bot-token'];
+  const botToken = req.headers['Authorization'];
 
   if (!channelId) {
     return res.status(400).json({ error: 'Missing channel ID' });
@@ -60,6 +60,7 @@ app.get('/api/v10/channels/:channelId/messages', async (req, res) => {
 // /reactions endpoint with pagination (after)
 app.get('/api/v10/channels/:channelId/messages/:messageId/reactions/:emoji', async (req, res) => {
   const { channelId, messageId, emoji } = req.params;
+    const botToken = req.headers['Authorization'];
   const after = req.query.after;
 
   if (!channelId || !messageId || !emoji) {
@@ -73,7 +74,7 @@ app.get('/api/v10/channels/:channelId/messages/:messageId/reactions/:emoji', asy
   try {
     const discordResponse = await fetch(discordUrl, {
       headers: {
-        'Authorization': `Bot ${DISCORD_BOT_TOKEN}`
+        'Authorization': `Bot ${botToken}`
       }
     });
 
