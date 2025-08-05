@@ -13,7 +13,7 @@ app.get('/api/v10/channels/:channelId/messages', async (req, res) => {
 
   // ✅ Get Bot Token from request headers
   console.log(req.headers)
-  const botToken = req.headers['authorization'];
+  const botToken = req.headers.authorization;
 
   if (!channelId) {
     return res.status(400).json({ error: 'Missing channel ID' });
@@ -31,7 +31,7 @@ app.get('/api/v10/channels/:channelId/messages', async (req, res) => {
   try {
     const discordResponse = await fetch(discordUrl, {
       headers: {
-        'Authorization': `Bot ${botToken}`,
+        'Authorization': `${botToken}`,
       }
     });
 
@@ -61,7 +61,7 @@ app.get('/api/v10/channels/:channelId/messages', async (req, res) => {
 // /reactions endpoint with pagination (after)
 app.get('/api/v10/channels/:channelId/messages/:messageId/reactions/:emoji', async (req, res) => {
   const { channelId, messageId, emoji } = req.params;
-    const botToken = req.headers['authorization'];
+     const botToken = req.headers.authorization;
   const after = req.query.after;
 
   if (!channelId || !messageId || !emoji) {
@@ -75,7 +75,7 @@ app.get('/api/v10/channels/:channelId/messages/:messageId/reactions/:emoji', asy
   try {
     const discordResponse = await fetch(discordUrl, {
       headers: {
-        'Authorization': `Bot ${botToken}`
+        'Authorization': `${botToken}`
       }
     });
 
