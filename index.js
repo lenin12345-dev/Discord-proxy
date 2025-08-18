@@ -57,6 +57,54 @@ app.get('/api/v10/channels/:channelId/messages', async (req, res) => {
   }
 });
 
+app.get('/api/v10/channels/:channelId/messages/:messageId', async (req, res) => {
+  const channelId = req.params.channelId;
+  const messageId = req.params.messageId;
+
+  // ✅ Get Bot Token from request headers
+  const botToken = req.headers.authorization;
+
+  // 🔍 Validate required params
+  if (!channelId || !messageId) {
+    return res.status(400).json({ error: 'Missing channel ID or message ID' });
+  }
+
+  if (!botToken) {
+    return res.status(401).json({ error: 'Missing Bot Token in header: Authorization' });
+  }
+
+  const discordUrl = `https://discord.com/api/v10/channels/${channelId}/messages/${messageId}`;
+
+  try {
+    const discordResponse = await fetch(discordUrl, {
+      headers: {
+        'Authorization': botToken
+      }
+    });
+
+    const contentType = discordResponse.headers.get("content-type");
+
+    if (!discordResponse.ok) {
+      const errorText = await discordResponse.text();
+      return res.status(discordResponse.status).json({ error: errorText });
+    }
+
+    if (contentType && contentType.includes("application/json")) {
+      const data = await discordResponse.json();
+      return res.json(data);
+    } else {
+      const text = await discordResponse.text();
+      return res.status(500).json({
+        error: "Discord API did not return JSON",
+        details: text
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.toString() });
+  }
+});
+
+
 // /guilds/:guild_id/members endpoint with pagination (limit, after)
 app.get('/api/v10/guilds/:guildId/members', async (req, res) => {
   const guildId = req.params.guildId;
